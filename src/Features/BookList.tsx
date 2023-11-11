@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import useBooksServices from "../books.services";
 import { useBooks } from "../context";
@@ -22,10 +22,19 @@ import PersonalReference from "./SearchBox";
 import { StyledBookListItem } from "../Components/styled";
 import { useNavigate } from "react-router-dom";
 import { authors } from "../utils";
+import { IBook } from "../interfaces/books";
+
+enum favoriteIconColor {
+  LIKED = "error",
+  DISLIKED = "primary",
+}
 
 export default function BookList() {
   const { books, loadingBooks, setSelectedBook } = useBooks();
   const [expanded, setExpanded] = useState<boolean>(false);
+  const [favoriteIconClicked, setFavoriteIconClicked] =
+    useState<favoriteIconColor>(favoriteIconColor.DISLIKED);
+
   const { getBooks } = useBooksServices();
   const navigate = useNavigate();
 
@@ -40,9 +49,23 @@ export default function BookList() {
       .then((res) => setSelectedBook(res.results));
   };
 
-  const isMobile = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down("sm")
-  );
+  const addFavoriteBook = (book: IBook) => {
+    const favoriteBooks =
+      JSON.parse(localStorage.getItem("favoriteBooks") as string) || [];
+    if (
+      !favoriteBooks.some((existingbook: IBook) => existingbook.id === book.id)
+    ) {
+      setFavoriteIconClicked(favoriteIconColor.LIKED);
+      favoriteBooks.push(book);
+      localStorage.setItem("favoriteBooks", JSON.stringify(favoriteBooks));
+    } else {
+      const removedFavBooks = favoriteBooks.filter(
+        (fb: IBook) => fb.id !== book.id
+      );
+      setFavoriteIconClicked(favoriteIconColor.DISLIKED);
+      localStorage.setItem("favoriteBooks", JSON.stringify(removedFavBooks));
+    }
+  };
 
   return !!loadingBooks ? (
     <CircularProgress size={50} />
@@ -115,12 +138,12 @@ export default function BookList() {
                       </Grid>
                     </Grid>
 
-                    <Grid container spacing={1} item xs={12} md={6}>
+                    <Grid container justifyContent={"center"} item xs={12}>
                       <Button onClick={() => getBookById(book.id)}>
                         <EditIcon />
                       </Button>
-                      <Button onClick={() => {}}>
-                        <DeleteIcon />
+                      <Button onClick={() => addFavoriteBook(book)}>
+                        <FavoriteIcon />
                       </Button>
                     </Grid>
                   </Box>

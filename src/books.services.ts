@@ -16,7 +16,7 @@ const useBooksServices = () => {
       })
       .catch((err) => {
         if (err.type) setLoadingBooks(false);
-        alert("no data");
+        alert("Something went wrong");
         setLoadingBooks(false);
       });
   }, [setLoadingBooks, setLoadingBooks]);
@@ -43,6 +43,7 @@ const useBooksServices = () => {
         setBooks(data.results);
       } catch (error) {
         setIsSearching(false);
+        alert("something went wrong!");
       }
     },
     2000
