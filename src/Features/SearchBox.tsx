@@ -22,7 +22,6 @@ const PersonalReference = () => {
         margin='none'
         value={searchedBook}
         onChange={(value) => {
-          console.log("value", value);
           searchBookHandler(value);
         }}
         InputProps={{

@@ -3,6 +3,8 @@ export interface IBook {
   title: string;
   authors: IAuthor[];
   download_count: number;
+  bookshelves: string[];
+  subjects: string[];
 }
 export interface IAuthor {
   name: string;

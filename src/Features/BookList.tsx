@@ -20,33 +20,29 @@ import useBooksServices from "../books.services";
 import { useBooks } from "../context";
 import PersonalReference from "./SearchBox";
 import { StyledBookListItem } from "../Components/styled";
-import { IBook } from "../interfaces/books";
+import { useNavigate } from "react-router-dom";
+import { authors } from "../utils";
 
 export default function BookList() {
   const { books, loadingBooks, setSelectedBook } = useBooks();
   const [expanded, setExpanded] = useState<boolean>(false);
   const { getBooks } = useBooksServices();
+  const navigate = useNavigate();
 
   useEffect(() => {
     getBooks();
   }, [getBooks]);
 
   const getBookById = (id: number) => {
-    fetch(`http://localhost:3001/Book/getBooks/${id}`)
+    navigate(`/book-details/${id}`);
+    fetch(`https://gutendex.com/books?ids=${id}`)
       .then((res) => res.json())
-      .then((res) => setSelectedBook(res));
+      .then((res) => setSelectedBook(res.results));
   };
 
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
-
-  const authors = (book: IBook) => {
-    const bookAuthors = book.authors
-      .map((b) => b.name.replace(",", ""))
-      .join(", ");
-    return bookAuthors;
-  };
 
   return !!loadingBooks ? (
     <CircularProgress size={50} />
@@ -68,7 +64,6 @@ export default function BookList() {
             <PersonalReference />
             {books &&
               books.map((book) => {
-                console.log("authors(book)", authors(book));
                 return (
                   <Box border={1}>
                     <Grid container>
@@ -86,7 +81,7 @@ export default function BookList() {
                     <Grid container>
                       <Grid textAlign='center' item xs={12} md={6}>
                         <ListItem>
-                          <StyledBookListItem primary='title' />
+                          <StyledBookListItem primary='Title' />
                         </ListItem>
                       </Grid>
                       <Grid item xs={12} md={6}>
