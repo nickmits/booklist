@@ -4,8 +4,9 @@ import Grid from "@mui/material/Grid";
 import { CircularProgress } from "@mui/material";
 import FormTextField from "../Components/FormTextField";
 import useBooksServices from "../books.services";
+import SearchIcon from "@mui/icons-material/Search";
 
-const PersonalReference = () => {
+const SearchBox = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchedBook, setSearchedBook] = useState("");
   const { searchBook } = useBooksServices();
@@ -16,20 +17,22 @@ const PersonalReference = () => {
   };
 
   return (
-    <Grid item>
-      <FormTextField
-        id='search-book'
-        margin='none'
-        value={searchedBook}
-        onChange={(value) => {
-          searchBookHandler(value);
-        }}
-        InputProps={{
-          endAdornment: isSearching && <CircularProgress size={20} />,
-        }}
-      />
+    <Grid container>
+      <Grid item xs={12}>
+        <FormTextField
+          id='search-book'
+          margin='none'
+          value={searchedBook}
+          onChange={(value) => {
+            searchBookHandler(value);
+          }}
+          InputProps={{
+            endAdornment: isSearching && <CircularProgress size={20} />,
+          }}
+        />
+      </Grid>
     </Grid>
   );
 };
 
-export default PersonalReference;
+export default SearchBox;

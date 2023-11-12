@@ -1,6 +1,5 @@
 import TextField, { TextFieldProps } from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
-import { styled } from "@mui/material";
 import MuiCheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 
 export interface FormSelectProps {
@@ -38,7 +37,3 @@ export const FormTextField: React.FC<
 };
 
 export default FormTextField;
-
-export const FormTextFieldFlexLabel = styled(FormTextField)({
-  "&& label": { whiteSpace: "break-spaces" },
-});

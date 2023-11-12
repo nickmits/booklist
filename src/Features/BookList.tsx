@@ -2,8 +2,6 @@ import {
   Button,
   Collapse,
   Grid,
-  List,
-  ListItem,
   Box,
   InputLabel,
   Typography,
@@ -12,6 +10,7 @@ import {
   Pagination,
   useMediaQuery,
   useTheme,
+  Divider,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
@@ -19,12 +18,11 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import useBooksServices from "../books.services";
 import { useBooks } from "../context";
-import PersonalReference from "./SearchBox";
+import SearchBox from "./SearchBox";
 import { StyledBookListItem } from "../Components/styled";
 import { useNavigate } from "react-router-dom";
 import { authors } from "../utils";
 import { IBook } from "../interfaces/books";
-import FavoriteCard from "./Card";
 import SnackBarError from "../Components/SnackBarError";
 
 export default function BookList() {
@@ -38,7 +36,7 @@ export default function BookList() {
     likedBooks,
     setLikedBooks,
   } = useBooks();
-  const [expanded, setExpanded] = useState<boolean>(false);
+  const [expanded, setExpanded] = useState<boolean>(true);
 
   const { getBooks } = useBooksServices();
   const navigate = useNavigate();
@@ -104,14 +102,11 @@ export default function BookList() {
       );
   }, [localStorage.getItem("favoriteBooks")]);
 
-  console.log("likedBooks", likedBooks);
-
   return !!loadingBooks ? (
     <CircularProgress size={50} />
   ) : (
     <>
       <SnackBarError errorMessage={errorMessage} />
-      <FavoriteCard />
       <Grid item xs={12} md={6}>
         <Grid item xs={12}>
           <Button onClick={() => setExpanded(!expanded)}>
@@ -123,59 +118,61 @@ export default function BookList() {
         </Grid>
 
         <Collapse in={expanded}>
-          <PersonalReference />
-          {currentBooks &&
-            currentBooks.map((book) => (
-              <Grid
-                container
-                justifyContent={"center"}
-                item
-                direction={isMobile ? "column" : "row"}
-                xs={12}
-                key={book.id}
-              >
-                <Box border={1} width='100%'>
-                  <Grid container alignItems='center'>
-                    <Grid item xs={6} md={3} textAlign='center'>
-                      <StyledBookListItem primary='id' />
-                      <StyledBookListItem primary={book.id} />
+          <Grid sx={{ marginBottom: "5px" }} item xs={12} sm={5} spacing={5}>
+            <SearchBox />
+          </Grid>
+          <Grid item xs={12}>
+            {currentBooks &&
+              currentBooks.map((book) => (
+                <Grid
+                  container
+                  justifyContent={"center"}
+                  item
+                  direction={isMobile ? "column" : "row"}
+                  xs={12}
+                  key={book.id}
+                >
+                  <Box border={2} width='100%'>
+                    <Grid container alignItems='center'>
+                      <Grid item xs={6} md={3} textAlign='center'>
+                        <StyledBookListItem primary='id' />
+                        <StyledBookListItem primary={book.id} />
+                      </Grid>
+                      <Grid item xs={6} md={3}>
+                        <StyledBookListItem primary='Title' />
+                        <StyledBookListItem primary={book.title} />
+                      </Grid>
+                      <Grid item xs={6} md={3}>
+                        <StyledBookListItem primary={"Authors"} />
+                        <StyledBookListItem primary={authors(book)} />
+                      </Grid>
+                      <Grid item xs={6} md={3}>
+                        <StyledBookListItem primary={"downloads"} />
+                        <StyledBookListItem primary={book.download_count} />
+                      </Grid>
                     </Grid>
-                    <Grid item xs={6} md={3}>
-                      <StyledBookListItem primary='Title' />
-                      <StyledBookListItem primary={book.title} />
-                    </Grid>
-                    <Grid item xs={6} md={3}>
-                      <StyledBookListItem primary={"Authors"} />
-                      <StyledBookListItem primary={authors(book)} />
-                    </Grid>
-                    <Grid item xs={6} md={3}>
-                      <StyledBookListItem primary={"downloads"} />
-                      <StyledBookListItem primary={book.download_count} />
-                    </Grid>
-                  </Grid>
 
-                  <Grid container justifyContent='center'>
-                    <Button onClick={() => getBookById(book.id)}>
-                      <EditIcon />
-                    </Button>
-                    <Button onClick={() => addFavoriteBook(book)}>
-                      <FavoriteIcon
-                        color={
-                          likedBooks &&
-                          likedBooks.some((likedBook) => {
-                            // console.log("likedBook.id", likedBook.id);
-                            // console.log("book.id", book.id);
-                            return likedBook.id === book.id;
-                          })
-                            ? "error"
-                            : "primary"
-                        }
-                      />
-                    </Button>
-                  </Grid>
-                </Box>
-              </Grid>
-            ))}
+                    <Grid container justifyContent='center'>
+                      <Button onClick={() => getBookById(book.id)}>
+                        <EditIcon color='secondary' />
+                      </Button>
+                      <Button onClick={() => addFavoriteBook(book)}>
+                        <FavoriteIcon
+                          color={
+                            likedBooks &&
+                            likedBooks.some((likedBook) => {
+                              return likedBook.id === book.id;
+                            })
+                              ? "error"
+                              : "primary"
+                          }
+                        />
+                      </Button>
+                    </Grid>
+                  </Box>
+                </Grid>
+              ))}
+          </Grid>
           <Grid item xs={12}>
             <Stack spacing={2} justifyContent='center' alignItems='center'>
               <Pagination

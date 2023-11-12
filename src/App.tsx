@@ -6,10 +6,10 @@ import Appbar from "./Components/Appbar";
 
 function NavbarWrapper() {
   return (
-    <div>
+    <>
       <Appbar />
       <Outlet />
-    </div>
+    </>
   );
 }
 function App() {

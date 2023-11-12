@@ -9,7 +9,7 @@ const MainLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
       justifyContent='center'
       alignItems='center'
       style={{
-        backgroundColor: "rgb(234, 237, 242)",
+        backgroundColor: "rgba(116, 59, 34, 0.3)",
         // backgroundImage: `url(${background})`,
         // backgroundRepeat: "no-repeat",
         // backgroundSize: "contain",

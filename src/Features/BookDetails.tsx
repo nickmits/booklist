@@ -5,6 +5,7 @@ import {
   Box,
   Typography,
   CircularProgress,
+  Divider,
 } from "@mui/material";
 import { StyledBookListItem } from "../Components/styled";
 import { useBooks } from "../context";
@@ -25,7 +26,7 @@ const BookDetails = () => {
   return selectedBook ? (
     <MainLayout>
       <Typography variant='h3'> Book details</Typography>
-      <Box border={1}>
+      <Box border={2} width='50%'>
         <Grid container>
           <Grid textAlign='center' item xs={12} md={6}>
             <ListItem>
@@ -38,6 +39,7 @@ const BookDetails = () => {
             </ListItem>
           </Grid>
         </Grid>
+        <Divider sx={{ border: 1, opacity: "0.2" }} />
         <Grid container>
           <Grid textAlign='center' item xs={12} md={6}>
             <ListItem>
@@ -50,6 +52,7 @@ const BookDetails = () => {
             </ListItem>
           </Grid>
         </Grid>
+        <Divider sx={{ border: 1, opacity: "0.2" }} />
         <Grid container>
           <Grid item xs={12} md={6}>
             <ListItem>
@@ -62,6 +65,7 @@ const BookDetails = () => {
             </ListItem>
           </Grid>
         </Grid>
+        <Divider sx={{ border: 1, opacity: "0.2" }} />
         <Grid container>
           <Grid item xs={12} md={6}>
             <ListItem>
@@ -74,6 +78,7 @@ const BookDetails = () => {
             </ListItem>
           </Grid>
         </Grid>
+        <Divider sx={{ border: 1, opacity: "0.2" }} />
         <Grid container>
           <Grid item xs={12} md={6}>
             <ListItem>
@@ -88,6 +93,7 @@ const BookDetails = () => {
             </ListItem>
           </Grid>
         </Grid>
+        <Divider sx={{ border: 1, opacity: "0.2" }} />
         <Grid container>
           <Grid item xs={12} md={6}>
             <ListItem>
@@ -104,7 +110,11 @@ const BookDetails = () => {
         </Grid>
       </Box>
       <Grid item>
-        <Button variant='outlined' onClick={goToBookList}>
+        <Button
+          sx={{ backgroundColor: "rgba(31, 28, 26, 0.6)", color: "black" }}
+          variant='text'
+          onClick={goToBookList}
+        >
           Back
         </Button>
       </Grid>
