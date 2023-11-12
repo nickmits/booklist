@@ -1,10 +1,10 @@
-import { useCallback, useState } from "react";
-import { IBook } from "./interfaces/books";
+import { useCallback } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { useBooks } from "./context";
 
 const useBooksServices = () => {
-  const { setBooks, setLoadingBooks } = useBooks();
+  const { setBooks, setLoadingBooks, setOpenSnackbar, setErrorMessage } =
+    useBooks();
 
   const getBooks = useCallback(() => {
     setLoadingBooks(true);
@@ -15,8 +15,8 @@ const useBooksServices = () => {
         setBooks && setBooks(res.results);
       })
       .catch((err) => {
-        if (err.type) setLoadingBooks(false);
-        alert("Something went wrong");
+        setErrorMessage("Failed retrieving book details");
+        setOpenSnackbar(true);
         setLoadingBooks(false);
       });
   }, [setLoadingBooks, setLoadingBooks]);
@@ -32,18 +32,14 @@ const useBooksServices = () => {
       try {
         setIsSearching(true);
         const response = await fetch(apiUrl);
-
-        if (!response.ok) {
-          setIsSearching(false);
-          throw new Error("Network response was not ok");
-        }
         setIsSearching(false);
         const data = await response.json();
 
         setBooks(data.results);
       } catch (error) {
+        setErrorMessage("Failed to search book");
         setIsSearching(false);
-        alert("something went wrong!");
+        setOpenSnackbar(true);
       }
     },
     2000

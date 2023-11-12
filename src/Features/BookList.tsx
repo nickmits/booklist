@@ -4,13 +4,10 @@ import {
   Grid,
   List,
   ListItem,
-  ListItemText,
   Box,
   InputLabel,
   Typography,
   CircularProgress,
-  useMediaQuery,
-  Theme,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
@@ -23,6 +20,8 @@ import { StyledBookListItem } from "../Components/styled";
 import { useNavigate } from "react-router-dom";
 import { authors } from "../utils";
 import { IBook } from "../interfaces/books";
+import FavoriteCard from "./Card";
+import SnackBarError from "../Components/SnackBarError";
 
 enum favoriteIconColor {
   LIKED = "error",
@@ -30,7 +29,14 @@ enum favoriteIconColor {
 }
 
 export default function BookList() {
-  const { books, loadingBooks, setSelectedBook } = useBooks();
+  const {
+    books,
+    loadingBooks,
+    setSelectedBook,
+    setOpenSnackbar,
+    errorMessage,
+    setErrorMessage,
+  } = useBooks();
   const [expanded, setExpanded] = useState<boolean>(false);
   const [favoriteIconClicked, setFavoriteIconClicked] =
     useState<favoriteIconColor>(favoriteIconColor.DISLIKED);
@@ -46,7 +52,13 @@ export default function BookList() {
     navigate(`/book-details/${id}`);
     fetch(`https://gutendex.com/books?ids=${id}`)
       .then((res) => res.json())
-      .then((res) => setSelectedBook(res.results));
+      .then((res) => {
+        setSelectedBook(res.results);
+      })
+      .catch((err) => {
+        setErrorMessage("Error fetching book information.");
+        setOpenSnackbar(true);
+      });
   };
 
   const addFavoriteBook = (book: IBook) => {
@@ -71,6 +83,8 @@ export default function BookList() {
     <CircularProgress size={50} />
   ) : (
     <>
+      <SnackBarError errorMessage={errorMessage} />
+      <FavoriteCard />
       <Grid item xs={12} md={6}>
         <List>
           <Grid item xs={12}>
