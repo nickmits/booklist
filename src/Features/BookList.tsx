@@ -10,7 +10,6 @@ import {
   Pagination,
   useMediaQuery,
   useTheme,
-  Divider,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
