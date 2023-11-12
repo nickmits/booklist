@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { authors } from "../utils";
 import { IBook } from "../interfaces/books";
 import SnackBarError from "../Components/SnackBarError";
+import Tooltip from "@mui/material/Tooltip";
 
 export default function BookList() {
   const {
@@ -152,21 +153,38 @@ export default function BookList() {
                     </Grid>
 
                     <Grid container justifyContent='center'>
-                      <Button onClick={() => getBookById(book.id)}>
-                        <EditIcon color='secondary' />
-                      </Button>
-                      <Button onClick={() => addFavoriteBook(book)}>
-                        <FavoriteIcon
-                          color={
-                            likedBooks &&
-                            likedBooks.some((likedBook) => {
-                              return likedBook.id === book.id;
-                            })
-                              ? "error"
-                              : "primary"
-                          }
-                        />
-                      </Button>
+                      <Tooltip
+                        placement='top-start'
+                        title='Pick to see book details'
+                      >
+                        <Button onClick={() => getBookById(book.id)}>
+                          <EditIcon color='secondary' />
+                        </Button>
+                      </Tooltip>
+                      <Tooltip
+                        title={
+                          likedBooks &&
+                          likedBooks.some((likedBook) => {
+                            return likedBook.id === book.id;
+                          })
+                            ? "Press to remove it from favorit card"
+                            : "Press to add to favorite card"
+                        }
+                        placement='top-start'
+                      >
+                        <Button onClick={() => addFavoriteBook(book)}>
+                          <FavoriteIcon
+                            color={
+                              likedBooks &&
+                              likedBooks.some((likedBook) => {
+                                return likedBook.id === book.id;
+                              })
+                                ? "error"
+                                : "primary"
+                            }
+                          />
+                        </Button>
+                      </Tooltip>
                     </Grid>
                   </Box>
                 </Grid>
