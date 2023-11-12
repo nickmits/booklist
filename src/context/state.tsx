@@ -5,6 +5,8 @@ export const useContextState = () => {
   const [books, setBooks] = useState<IBook[]>();
   const [loadingBooks, setLoadingBooks] = useState<boolean>(false);
   const [selectedBook, setSelectedBook] = useState<IBook[]>();
+  const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const booksState = {
     loadingBooks,
@@ -13,6 +15,10 @@ export const useContextState = () => {
     setLoadingBooks,
     selectedBook,
     setSelectedBook,
+    openSnackbar,
+    setOpenSnackbar,
+    errorMessage,
+    setErrorMessage,
   };
 
   return booksState;

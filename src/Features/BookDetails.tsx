@@ -11,9 +11,10 @@ import { useBooks } from "../context";
 import { authors } from "../utils";
 import MainLayout from "../Components/MainLayout";
 import { useNavigate } from "react-router-dom";
+import SnackBarError from "../Components/SnackBarError";
 
 const BookDetails = () => {
-  const { selectedBook, setSelectedBook } = useBooks();
+  const { selectedBook, setSelectedBook, errorMessage } = useBooks();
   const navigate = useNavigate();
 
   const goToBookList = () => {
@@ -110,6 +111,7 @@ const BookDetails = () => {
     </MainLayout>
   ) : (
     <MainLayout>
+      <SnackBarError errorMessage={errorMessage} />
       <CircularProgress size={50} />
     </MainLayout>
   );
