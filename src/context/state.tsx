@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IBook } from "../interfaces/books";
 
 export const useContextState = () => {
@@ -7,6 +7,7 @@ export const useContextState = () => {
   const [selectedBook, setSelectedBook] = useState<IBook[]>();
   const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [likedBooks, setLikedBooks] = useState<IBook[]>();
 
   const booksState = {
     loadingBooks,
@@ -19,6 +20,8 @@ export const useContextState = () => {
     setOpenSnackbar,
     errorMessage,
     setErrorMessage,
+    likedBooks,
+    setLikedBooks,
   };
 
   return booksState;

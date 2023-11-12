@@ -8,6 +8,10 @@ import {
   InputLabel,
   Typography,
   CircularProgress,
+  Stack,
+  Pagination,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
@@ -23,11 +27,6 @@ import { IBook } from "../interfaces/books";
 import FavoriteCard from "./Card";
 import SnackBarError from "../Components/SnackBarError";
 
-enum favoriteIconColor {
-  LIKED = "error",
-  DISLIKED = "primary",
-}
-
 export default function BookList() {
   const {
     books,
@@ -36,13 +35,32 @@ export default function BookList() {
     setOpenSnackbar,
     errorMessage,
     setErrorMessage,
+    likedBooks,
+    setLikedBooks,
   } = useBooks();
   const [expanded, setExpanded] = useState<boolean>(false);
-  const [favoriteIconClicked, setFavoriteIconClicked] =
-    useState<favoriteIconColor>(favoriteIconColor.DISLIKED);
 
   const { getBooks } = useBooksServices();
   const navigate = useNavigate();
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const booksPerPage = 3;
+
+  const indexOfLastBook = currentPage * booksPerPage;
+  const indexOfFirstBook = indexOfLastBook - booksPerPage;
+  const currentBooks = books?.slice(indexOfFirstBook, indexOfLastBook);
+
+  const totalPages = books && Math.ceil(books.length / booksPerPage);
+
+  const handleChangePage = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setCurrentPage(value);
+  };
 
   useEffect(() => {
     getBooks();
@@ -67,17 +85,26 @@ export default function BookList() {
     if (
       !favoriteBooks.some((existingbook: IBook) => existingbook.id === book.id)
     ) {
-      setFavoriteIconClicked(favoriteIconColor.LIKED);
-      favoriteBooks.push(book);
-      localStorage.setItem("favoriteBooks", JSON.stringify(favoriteBooks));
+      const updatedFavorites = [...favoriteBooks, book];
+      localStorage.setItem("favoriteBooks", JSON.stringify(updatedFavorites));
+      setLikedBooks(updatedFavorites);
     } else {
       const removedFavBooks = favoriteBooks.filter(
         (fb: IBook) => fb.id !== book.id
       );
-      setFavoriteIconClicked(favoriteIconColor.DISLIKED);
       localStorage.setItem("favoriteBooks", JSON.stringify(removedFavBooks));
+      setLikedBooks(removedFavBooks);
     }
   };
+
+  useEffect(() => {
+    localStorage.getItem("favoriteBooks") &&
+      setLikedBooks(
+        JSON.parse(localStorage.getItem("favoriteBooks") as string)
+      );
+  }, [localStorage.getItem("favoriteBooks")]);
+
+  console.log("likedBooks", likedBooks);
 
   return !!loadingBooks ? (
     <CircularProgress size={50} />
@@ -86,85 +113,80 @@ export default function BookList() {
       <SnackBarError errorMessage={errorMessage} />
       <FavoriteCard />
       <Grid item xs={12} md={6}>
-        <List>
+        <Grid item xs={12}>
+          <Button onClick={() => setExpanded(!expanded)}>
+            <InputLabel>
+              <Typography variant='subtitle2'>BookList</Typography>
+            </InputLabel>
+            <ExpandMoreIcon />
+          </Button>
+        </Grid>
+
+        <Collapse in={expanded}>
+          <PersonalReference />
+          {currentBooks &&
+            currentBooks.map((book) => (
+              <Grid
+                container
+                justifyContent={"center"}
+                item
+                direction={isMobile ? "column" : "row"}
+                xs={12}
+                key={book.id}
+              >
+                <Box border={1} width='100%'>
+                  <Grid container alignItems='center'>
+                    <Grid item xs={6} md={3} textAlign='center'>
+                      <StyledBookListItem primary='id' />
+                      <StyledBookListItem primary={book.id} />
+                    </Grid>
+                    <Grid item xs={6} md={3}>
+                      <StyledBookListItem primary='Title' />
+                      <StyledBookListItem primary={book.title} />
+                    </Grid>
+                    <Grid item xs={6} md={3}>
+                      <StyledBookListItem primary={"Authors"} />
+                      <StyledBookListItem primary={authors(book)} />
+                    </Grid>
+                    <Grid item xs={6} md={3}>
+                      <StyledBookListItem primary={"downloads"} />
+                      <StyledBookListItem primary={book.download_count} />
+                    </Grid>
+                  </Grid>
+
+                  <Grid container justifyContent='center'>
+                    <Button onClick={() => getBookById(book.id)}>
+                      <EditIcon />
+                    </Button>
+                    <Button onClick={() => addFavoriteBook(book)}>
+                      <FavoriteIcon
+                        color={
+                          likedBooks &&
+                          likedBooks.some((likedBook) => {
+                            // console.log("likedBook.id", likedBook.id);
+                            // console.log("book.id", book.id);
+                            return likedBook.id === book.id;
+                          })
+                            ? "error"
+                            : "primary"
+                        }
+                      />
+                    </Button>
+                  </Grid>
+                </Box>
+              </Grid>
+            ))}
           <Grid item xs={12}>
-            <Button onClick={() => setExpanded(!expanded)}>
-              <InputLabel>
-                <Typography variant='subtitle2'>BookList</Typography>
-              </InputLabel>
-
-              <ExpandMoreIcon />
-            </Button>
+            <Stack spacing={2} justifyContent='center' alignItems='center'>
+              <Pagination
+                count={totalPages}
+                page={currentPage}
+                onChange={handleChangePage}
+                color='primary'
+              />
+            </Stack>
           </Grid>
-
-          <Collapse in={expanded}>
-            <PersonalReference />
-            {books &&
-              books.map((book) => {
-                return (
-                  <Box border={1}>
-                    <Grid container>
-                      <Grid textAlign='center' item xs={12} md={6}>
-                        <ListItem>
-                          <StyledBookListItem primary='id' />
-                        </ListItem>
-                      </Grid>
-                      <Grid item xs={12} md={6}>
-                        <ListItem>
-                          <StyledBookListItem primary={book.id} />
-                        </ListItem>
-                      </Grid>
-                    </Grid>
-                    <Grid container>
-                      <Grid textAlign='center' item xs={12} md={6}>
-                        <ListItem>
-                          <StyledBookListItem primary='Title' />
-                        </ListItem>
-                      </Grid>
-                      <Grid item xs={12} md={6}>
-                        <ListItem>
-                          <StyledBookListItem primary={book.title} />
-                        </ListItem>
-                      </Grid>
-                    </Grid>
-                    <Grid container>
-                      <Grid item xs={12} md={6}>
-                        <ListItem>
-                          <StyledBookListItem primary={"Authors"} />
-                        </ListItem>
-                      </Grid>
-                      <Grid item xs={12} md={6}>
-                        <ListItem>
-                          <StyledBookListItem primary={authors(book)} />
-                        </ListItem>
-                      </Grid>
-                    </Grid>
-                    <Grid container>
-                      <Grid item xs={12} md={6}>
-                        <ListItem>
-                          <StyledBookListItem primary={"downloads"} />
-                        </ListItem>
-                      </Grid>
-                      <Grid item xs={12} md={6}>
-                        <ListItem>
-                          <StyledBookListItem primary={book.download_count} />
-                        </ListItem>
-                      </Grid>
-                    </Grid>
-
-                    <Grid container justifyContent={"center"} item xs={12}>
-                      <Button onClick={() => getBookById(book.id)}>
-                        <EditIcon />
-                      </Button>
-                      <Button onClick={() => addFavoriteBook(book)}>
-                        <FavoriteIcon />
-                      </Button>
-                    </Grid>
-                  </Box>
-                );
-              })}
-          </Collapse>
-        </List>
+        </Collapse>
       </Grid>
     </>
   );
